@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -35,12 +36,22 @@ public class MovieTheaterowner {
 	
 	public void homepage() throws Exception{
 		try{
+			//creates movies playing database if it does not already exits
 			Connection connect=getConnection();
 			PreparedStatement movies=(PreparedStatement) connect.prepareStatement("CREATE TABLE IF NOT EXISTS MoviesPlaying(MovieTherateID int,MovieTherate varchar(50),MovieName varchar(50), MovieDetail varchar(200), MoviePrice float, MovieRating varchar(10), runtime int,showtimes varchar(100),NumberOfSeats int, PRIMARY KEY(MovieName))");
 			movies.executeUpdate();
-			Stage MTHomepage=new Stage();
+			
+			
+		//creates the Movie theater homepage	
+		Stage MTHomepage=new Stage();
 		MTHomepage.setTitle("Movie Theater Homepage");
 		BorderPane Task= new BorderPane();
+		//FlowPane flow=new FlowPane();
+		//flow.setPadding(new Insets(5,0,5,0));
+		//flow.setVgap(5);
+		//flow.setHgap(5);
+		VBox vbox=new VBox();
+		vbox.setSpacing(10);
 		HBox hbox=new HBox();
 		hbox.setPadding(new Insets(15,12,15,12));
 		hbox.setSpacing(10);
@@ -48,6 +59,36 @@ public class MovieTheaterowner {
 		Button addM=new Button("Add");
 		Button MHistory=new Button("History");
 		Button removeM=new Button("Remove");
+		
+		//adds movies that are in the moviesplaying database to the homepage
+		String MoviesPlaying="SELECT DISTINCT MovieName FROM MoviesPlaying";
+		PreparedStatement getMovie=connect.prepareStatement(MoviesPlaying);
+		ResultSet MoviesFound=getMovie.executeQuery();
+		ArrayList<String> MoviesInsert=new ArrayList<String>();
+		
+		while(MoviesFound.next()){
+			//gets information about the movie
+			String Moviename=MoviesFound.getString(1);
+			
+			
+			//gives a default image for each movie
+			//creates a label for each film and displays it on the homepage
+			
+			
+			
+			Image moviepic=new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw6yVjKcPDZoeO48w6bM25vlOMbVR4uSBip8ZC044J5ac7zd665g");
+			ImageView imageholder=new ImageView(moviepic);
+			imageholder.setFitHeight(200);
+			imageholder.setFitWidth(200);
+			Label MovieOnPage=new Label(Moviename);
+			MovieOnPage.setAlignment(Pos.BOTTOM_CENTER);
+			vbox.getChildren().add(imageholder);
+			vbox.getChildren().add(MovieOnPage);
+			
+			
+			
+		}
+		
 		
 		addM.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
@@ -101,7 +142,7 @@ public class MovieTheaterowner {
 				
 				//gets the movie information that was enterd
 				String getMovieTitle=MovieTitle.getText();
-				String getMovieInfo=MovieDesricpt.getText();
+				String getMovieInfo=MovieInfo.getText();
 				String getMoviePrice=MovieCost.getText();
 				String getRunTime=RT.getText();
 				
@@ -153,16 +194,16 @@ public class MovieTheaterowner {
 					try {
 						
 						try {
-							System.out.println("i am here");
+							
 							PreparedStatement state = connect.prepareStatement("SELECT * FROM movieowner");
 							ResultSet output=state.executeQuery();
-							System.out.println("i have done database qurey");
+							
 							ArrayList<String> myList=new ArrayList<String>();
 							//
 							while(output.next()){
-								System.out.println("i am in the while loop");
+								
 								if(password.equals(output.getString("password"))){
-									System.out.println("i have found a password that match");
+									
 									int ID=output.getInt(1);
 									String name=output.getString(2);
 									String MT=output.getString(4);
@@ -172,7 +213,8 @@ public class MovieTheaterowner {
 									String place="INSERT INTO moviesplaying(MovieTherateID,MovieTherate,MovieName,MovieDetail,MoviePrice,MovieRating,runtime,showtimes,NumberOfSeats ) VALUES('"+ID+"','"+MT+"','"+getMovieTitle+"','"+getMovieInfo+"','"+getMoviePrice+"','"+Rating.getValue()+"','"+getRunTime+"','"+getShowTime+"','"+getSeatNumber+"')";
 									java.sql.PreparedStatement insertvalue=connect.prepareStatement(place);
 									insertvalue.executeUpdate();
-									System.out.println("enterd into database");
+									homepage();
+									
 
 								}
 								
@@ -269,6 +311,7 @@ public class MovieTheaterowner {
 		hbox.getChildren().add(removeM);
 		
 		Task.setTop(hbox);
+		Task.setCenter(vbox);
 		
 		Scene scene = new Scene(Task,500,500);
 		MTHomepage.setScene(scene);

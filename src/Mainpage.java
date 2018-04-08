@@ -16,13 +16,23 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class Mainpage extends Application {
@@ -39,16 +49,127 @@ public class Mainpage extends Application {
 		//sets title
 		mainpage.setTitle("MovieViews");
 		//creates a pane for the scene
+		BorderPane bord=new BorderPane(); 
 		GridPane root= new GridPane();
+		VBox vpane=new VBox();
 		
-		//root.setAlignment(Pos.CENTER);
-
-			//-fx-Background-color:red;
-		
+		vpane.setSpacing(10);
+		vpane.setStyle("-fx-background-color:darkred");
 		root.setHgap(10);
 		root.setVgap(5);
 		root.setStyle("-fx-background-color:darkred");
 		
+		//places Movies onto hompeage
+		String AllMovies="SELECT DISTINCT MovieName FROM MoviesPlaying ";
+		PreparedStatement GetOrignalMovies=conn.prepareStatement(AllMovies);
+		ResultSet MovieRetrurned=GetOrignalMovies.executeQuery();
+		ArrayList<String> MovieOnePage=new ArrayList<String>();
+		
+		//gets each movie title returned form the select statement
+		while(MovieRetrurned.next()){
+			//System.out.println("i have searched database");
+			String Title=MovieRetrurned.getString(1);
+			
+			//creates a default image for each movie
+			Image moviepic=new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw6yVjKcPDZoeO48w6bM25vlOMbVR4uSBip8ZC044J5ac7zd665g");
+		
+			
+			//makes a label for each movie in the database
+			Label MovieOnPage=new Label(Title);
+			MovieOnPage.setGraphic(new ImageView(moviepic));
+			MovieOnPage.setContentDisplay(ContentDisplay.TOP);
+			MovieOnPage.setTextFill(Color.ANTIQUEWHITE);
+			
+			//makes label clickable and dispalys the movie theater playing this flim
+			MovieOnPage.setOnMousePressed(new EventHandler<MouseEvent>(){
+				@Override
+				public void handle(MouseEvent e){
+					//creates new stage that displays Movie theater palying this flim
+					Stage MTPlaying=new Stage();
+					MTPlaying.setTitle("Movie Theaters playing"+Title);
+					BorderPane gird=new BorderPane();
+					HBox Theater=new HBox();
+					VBox movieInfo=new VBox();
+					Theater.setSpacing(10);
+					movieInfo.setSpacing(10);
+				
+					//gets movie information from the database
+					String getDetail="SELECT * FROM MoviesPlaying WHERE MovieName='"+Title+"'";
+					try {
+						
+						PreparedStatement MoviesSelected=conn.prepareStatement(getDetail);
+						
+						ResultSet MoviesInDatabase=MoviesSelected.executeQuery();
+						
+						ArrayList<String> MoviesReturned=new ArrayList<String>();
+						
+						while(MoviesInDatabase.next()){
+							System.out.println("I am geteing movie info");
+							String MTID=MoviesInDatabase.getString(1);
+							String MTName=MoviesInDatabase.getString(2);
+							String MovieName=MoviesInDatabase.getString(3);
+							String MDetail=MoviesInDatabase.getString(4);
+		 					Float MPrice=MoviesInDatabase.getFloat(5);
+							String MovieRate=MoviesInDatabase.getString(6);
+							int time=MoviesInDatabase.getInt(7);
+							String showings=MoviesInDatabase.getString(8);
+							int numOfSeat=MoviesInDatabase.getInt(9);
+							
+							
+							
+							//nt font=new Font();
+
+							Label showtimes=new Label("Movie Theaters playing  "+MovieName);
+							showtimes.setFont(Font.font ("Arial",FontWeight.BOLD,16));
+							showtimes.setWrapText(true);
+							
+							//places showtimes onto the stage
+							
+							Label MTitle=new Label(MovieName);
+							MTitle.setFont(Font.font("Arial",FontWeight.BOLD,20));
+							Label MD=new Label(MDetail);
+							Label Movieinfo= new Label("Movie Descrption");
+							movieInfo.getChildren().add(MTitle);
+							movieInfo.getChildren().add(Movieinfo);
+							movieInfo.getChildren().add(MD);
+							movieInfo.getChildren().add(showtimes);
+							
+							Label MTshowings=new Label(MTName);
+							MTshowings.setFont(Font.font("Arial",FontWeight.BOLD,12));
+							Image MT=new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp4RrZRGrfTAM_KEOgnRNqa3xrbrlVVxsTtDzmyQvBA_0JxXBV9g");
+							ImageView view=new ImageView(MT);
+							view.setFitHeight(150);
+							view.setFitWidth(150);
+							MTshowings.setGraphic(view);
+							MTshowings.setContentDisplay(ContentDisplay.TOP);
+							
+							Theater.getChildren().add(MTshowings);
+							
+							
+							
+						}
+						
+						
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					
+					
+					Scene scene=new Scene(gird,500,500,Color.RED);
+					gird.setCenter(Theater);
+					gird.setTop(movieInfo);
+					MTPlaying.setScene(scene);
+					MTPlaying.show();
+					
+				}
+			});
+			
+			vpane.getChildren().add(MovieOnPage);
+			
+		}
+	
 		//creates log in button
 		Button login= new Button("Log in!");
 		Label search=new Label("Search:");
@@ -69,11 +190,13 @@ public class Mainpage extends Application {
 			}
 		});
 		
-		Scene scene= new Scene(root,500,500, Color.RED);
+		Scene scene= new Scene(bord,500,500, Color.RED);
 		root.add(search, 0, 0);
 		root.add(serachbox, 2, 0);
 		root.add(searchbt, 4, 0);
 		root.add(login,6,0);
+		bord.setTop(root);
+		bord.setCenter(vpane);
 		mainpage.setScene(scene);
 		mainpage.show();
 	}
