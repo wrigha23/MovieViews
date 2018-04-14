@@ -635,7 +635,7 @@ public static Connection getConnection() throws Exception{
 		String driver="com.mysql.jdbc.Driver";
 		String url="jdbc:mysql://127.0.0.1:3306/movieview";
 		String username="root";
-		String password="Yondrese11";
+		String password="Yondrese11"; //I am using "password" as my password for MySQL
 		Class.forName(driver);
 		
 		Connection conn=DriverManager.getConnection(url,username,password);
