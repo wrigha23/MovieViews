@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,29 +39,38 @@ import javafx.stage.Stage;
 public class Mainpage extends Application {
 	@Override
 	public void start (Stage mainpage) throws Exception{
-	try{	Connection conn=getConnection();
+	try{	
 		
-		PreparedStatement create=conn.prepareStatement("CREATE TABLE IF NOT EXISTS Customer(ID int,firstname varchar(50),lastname varchar(50),username varchar(50),password varchar(50), address varchar (75), PRIMARY KEY(ID))  ");
-		PreparedStatement customer=conn.prepareStatement("CREATE TABLE IF NOT EXISTS Movieowner(ID int,firstname varchar(50), lastname varchar(50), MTname varchar(50), MTaddress varchar(50), city varchar(50), username varchar(50), password varchar(50), PRIMARY KEY(ID,MTname))");
+		Connection conn=getConnection();	//Connects to Database
+		
+		PreparedStatement create=conn.prepareStatement("CREATE TABLE IF NOT EXISTS "
+				+ "Customer(ID int,firstname varchar(50),lastname varchar(50),username"
+				+ " varchar(50),password varchar(50), address varchar (75), PRIMARY KEY(ID))");
+		
+		PreparedStatement customer=conn.prepareStatement("CREATE TABLE IF NOT EXISTS "
+				+ "Movieowner(ID int,firstname varchar(50), lastname varchar(50), MTname "
+				+ "varchar(50), MTaddress varchar(50), city varchar(50), username varchar(50), "
+				+ "password varchar(50), PRIMARY KEY(ID,MTname))");
 		
 		create.executeUpdate();
 		customer.executeUpdate();
 		
-		//sets title
+		//sets title of the initial window
 		mainpage.setTitle("MovieViews");
+		
 		//creates a pane for the scene
 		BorderPane bord=new BorderPane(); 
 		GridPane root= new GridPane();
 		VBox vpane=new VBox();
 		
 		vpane.setSpacing(10);
-		vpane.setStyle("-fx-background-color:darkred");
+		vpane.setStyle("-fx-background-color:darkred");	//Gives the window a darkred color
 		root.setHgap(10);
 		root.setVgap(5);
-		root.setStyle("-fx-background-color:darkred");
+		root.setStyle("-fx-background-color:darkred");	//Gives the Search Bar Row the darkred color
 		
 		//places Movies onto hompeage
-		String AllMovies="SELECT DISTINCT MovieName FROM MoviesPlaying ";
+		String AllMovies="SELECT DISTINCT MovieName FROM MoviesPlaying";	//there was a single space after "MoviesPlaying"
 		PreparedStatement GetOrignalMovies=conn.prepareStatement(AllMovies);
 		ResultSet MovieRetrurned=GetOrignalMovies.executeQuery();
 		ArrayList<String> MovieOnePage=new ArrayList<String>();
@@ -80,11 +90,11 @@ public class Mainpage extends Application {
 			MovieOnPage.setContentDisplay(ContentDisplay.TOP);
 			MovieOnPage.setTextFill(Color.ANTIQUEWHITE);
 			
-			//makes label clickable and dispalys the movie theater playing this flim
+			//makes label click-able and displays the movie theater playing this film
 			MovieOnPage.setOnMousePressed(new EventHandler<MouseEvent>(){
 				@Override
 				public void handle(MouseEvent e){
-					//creates new stage that displays Movie theater palying this flim
+					//creates new stage that displays Movie theater playing this film
 					Stage MTPlaying=new Stage();
 					MTPlaying.setTitle("Movie Theaters playing"+Title);
 					BorderPane gird=new BorderPane();
@@ -170,19 +180,27 @@ public class Mainpage extends Application {
 			
 		}
 	
-		//creates log in button
-		Button login= new Button("Log in!");
+		//creates log in button labeled "Log In"
+		Button login= new Button("Log In");
+		
+		//The Text next to the Search Box
 		Label search=new Label("Search:");
-		TextField serachbox=new TextField("Enter movie or address");
+		
+		//The Default Text in the Search Box
+		TextField serachbox=new TextField("Enter Movie or Address");
+		
+		//Creates the Search Button labeled "Search"
 		Button searchbt=new Button("Search");
+		
+		//Assigns the size of the Label next to search box
 		search.setStyle("-fx-color:blue; -fx-font-size:20;");
 		
 		login.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent e){
-				mainpage.hide();
+				mainpage.hide();	//Hides the Main Page upon clicking the "Log In" Button
 				try {
-					Login();
+					Login();	//Calls the Login Class
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					System.out.println(e1);
@@ -190,7 +208,8 @@ public class Mainpage extends Application {
 			}
 		});
 		
-		Scene scene= new Scene(bord,500,500, Color.RED);
+		//The initial Window upon executing the program
+		Scene scene= new Scene(bord,500,500, Color.RED);	//Gives the size of the Window..What is red?
 		root.add(search, 0, 0);
 		root.add(serachbox, 2, 0);
 		root.add(searchbt, 4, 0);
@@ -221,10 +240,10 @@ private void typeofuser(){
 	flow.setHgap(15);
 	
 	//flow.setAlignment(Pos.CENTER);
-	Label pick=new Label("Choose user type");
+	Label pick=new Label("Choose User Type");
 	
 	Button customer=new Button("Customer");
-	Button MT= new Button("Movie Therater");
+	Button MT= new Button("Movie Theater");
 	flow.add(pick, 5, 0);
 	flow.add(customer, 5, 1);
 	flow.add(MT, 5, 2);
@@ -233,7 +252,7 @@ private void typeofuser(){
 		@Override
 		public void handle(ActionEvent e){
 			try {
-				CustomerResigster();
+				CustomerRegister();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -259,11 +278,6 @@ private void typeofuser(){
 	Scene rsceen=new Scene(flow,500,500);
 	register.setScene(rsceen);
 	register.show();
-	
-	
-	
-	
-	
 }
 
 
@@ -279,21 +293,24 @@ private void Login() throws Exception{
 	root.setVgap(20);
 	
 	TextField username= new TextField();
-	TextField password=new TextField();
+	PasswordField password=new PasswordField();
 	
 	Label user= new Label("Username:");
 	Label pass= new Label("Password:");
 	
-	//ceartes log in buttons
-	Button login= new Button("Log in");
-	Button cancel= new Button("cancel");
+	//creates log in buttons
+	Button login= new Button("Log In");
+	Button cancel= new Button("Cancel");
 	Button newm= new Button("Register");
 	
 	//creates customer table
 	Connection conn=getConnection();
-	//PreparedStatement create=conn.prepareStatement("CREATE TABLE IF NOT EXISTS Customer(ID int NOT NULL,firstname varchar(50),lastname varchar(50),username varchar(50),password varchar(50), city varchar(75), address varchar (75), PRIMARY KEY(ID)) ");
+	PreparedStatement create=conn.prepareStatement("CREATE TABLE IF NOT EXISTS Customer(ID int NOT NULL,"
+			+ "firstname varchar(50),lastname varchar(50),username varchar(50),password varchar(50), city "
+			+ "varchar(75), address varchar (75), PRIMARY KEY(ID))");
+	
 	//create.executeUpdate();
-	System.out.println("Table created");
+	System.out.println("Table Created");
 	
 	login.setOnAction(new EventHandler<ActionEvent>(){
 		@Override
@@ -308,12 +325,12 @@ private void Login() throws Exception{
 				ResultSet result=search.executeQuery();
 				ResultSet resultMT=searchMT.executeQuery();
 				ArrayList<String> array= new ArrayList<String>();
-				while((result.next())&&(resultMT.next())){
-					if(usern.equals(result.getString("username"))&& pass.equals(result.getString("password"))){
+				
+				while( (result.next()) && (resultMT.next()) ){
+					if( usern.equals(result.getString("username")) && pass.equals(result.getString("password")) ){
 						System.out.println("Logged in");
-						
 					}
-					else if(usern.equals(resultMT.getString("username"))&&pass.equals(resultMT.getString("password"))) {
+					else if(usern.equals(resultMT.getString("username")) && pass.equals(resultMT.getString("password"))) {
 						MovieTheaterowner MTO=new MovieTheaterowner();
 						try {
 							MTO.homepage();
@@ -324,7 +341,7 @@ private void Login() throws Exception{
 					}
 					
 					else{
-						System.out.println("incorrect password enterd");
+						System.out.println("Incorrect Password Entered");
 					}
 				}
 			} catch (SQLException e1) {
@@ -340,7 +357,6 @@ private void Login() throws Exception{
 		public void handle(ActionEvent e){
 			loginpage.hide();
 			typeofuser();
-			
 		}
 	});
 	
@@ -361,19 +377,14 @@ private void Login() throws Exception{
 	root.getChildren().addAll(pass, password);
 	root.getChildren().addAll(login,newm,cancel);
 	
-	
 	Scene scene= new Scene(root, 300, 200);
 	
 	loginpage.setScene(scene);
 	loginpage.show();
-		
-	
-	
-	
 }
 
 
-private void CustomerResigster(){
+private void CustomerRegister(){
 	Stage register= new Stage();
 	register.setTitle("New member");
 	
@@ -385,17 +396,17 @@ private void CustomerResigster(){
 	TextField firstname=new TextField ();
 	TextField Lastname=new TextField();
 	TextField username=new TextField();
-	TextField password= new TextField();
-	TextField newpass= new TextField();
+	PasswordField password= new PasswordField();
+	PasswordField newpass= new PasswordField();
 	TextField address= new TextField();
 	
 	Label firstn=new Label("First Name:");
 	Label lastn= new Label("Last Name");
 	Label usern= new Label ("User Name:");
 	Label pass= new Label ("Password");
-	Label repass= new Label("re enter password");
+	Label repass= new Label("Re-enter Password");
 	Label add= new Label("Address");
-	Label city=new Label("city");
+	Label city=new Label("City");
 	Button enter= new Button("Enter");
 	
 	ComboBox citybox =new ComboBox();
@@ -450,32 +461,41 @@ private void CustomerResigster(){
 					PreparedStatement statement=conn.prepareStatement(current);
 					ResultSet result=statement.executeQuery();
 					
-					Random rand= new Random();
-					custID=rand.nextInt(2000)+1;
+					Random rand= new Random(); // A Random Number Generator to give Customer unique ID
+					custID=rand.nextInt(2000)+1;	//Gives the Customer a unique ID
 					ArrayList<String> array= new ArrayList<String>();
+					
 					while(result.next()){
 						//Random rand= new Random();
 						//custID=rand.nextInt(2000)+1;
-						//checks to see if username exist in database
+						
 						if(uname.equals(result.getString("username"))){
-							
+							//Checks to see if username exists in the customer database
+							System.out.println("Username already exists...");
 						}
-						//checks to see if password exist in dtatabase
+						//checks to see if password exist in database
 						else if(pword.equals(result.getString("password"))){
-							System.out.println("Password already exist");
+							//Checks to see if the user's password exist in the Database
+							System.out.println("Choose another password...");
 						}
 						else{
-							//places userinformation into the database
+							//places the user's information into the database
 							System.out.println("Username and password is not in database");
+							
 							try{
-							PreparedStatement insertinfo=conn.prepareStatement("INSERT INTO customer(ID,firstname,lastname,username,password,city,address) VALUES("+custID+",'"+fname+"','"+lname+"','"+uname+"','"+pword+"','"+citybox.getValue()+"','"+street+"')");
+							PreparedStatement insertinfo=conn.prepareStatement("INSERT INTO customer(ID,firstname,lastname,"
+									+ "username,password,address) VALUES("+custID+",'"+fname+"','"+lname+"','"+uname+"',"
+									+ "'"+pword+"','"+street+"')");	//Removed "city" and " '"+citybox.getValue()+"' "
+							
 							insertinfo.executeUpdate();
 							
 							Label correct=new Label("Account created");
 							root.getChildren().add(correct);
 							Login();
 							register.hide();
+							System.out.println("Customer Info Addition Success.");
 							}
+							
 							catch (Exception e3){
 								System.out.println(e3);
 								
@@ -495,7 +515,7 @@ private void CustomerResigster(){
 			}
 			
 			else {
-				System.out.println("passwords do not match");
+				System.out.println("Passwords do not match...");
 			}
 			
 			
@@ -512,17 +532,17 @@ private void CustomerResigster(){
 
 private void MovietheaterRegister(){
 	Stage MT= new Stage();
-	MT.setTitle("Movie Theater registion");
+	MT.setTitle("Movie Theater Registion");
 	
 	GridPane grid=new GridPane();
-	Label firstn=new Label("First name:");
-	Label lastn=new Label("last name:");
-	Label MovieTherater=new Label("Movie Therater name:");
-	Label MTaddress=new Label("Movie Therater address:");
-	Label city=new Label("city:");
-	Label usern=new Label("username:");
+	Label firstn=new Label("First Name:");
+	Label lastn=new Label("Last Name:");
+	Label MovieTherater=new Label("Movie Theater Name:");
+	Label MTaddress=new Label("Movie Theater Address:");
+	Label city=new Label("City:");
+	Label usern=new Label("Username:");
 	Label passw=new Label("Password:");
-	Label repass=new Label("re-enter password:");
+	Label repass=new Label("Re-Enter Password:");
 	
 	Button enter=new Button("Enter");
 	Button cancel=new Button("Cancel");
@@ -533,8 +553,8 @@ private void MovietheaterRegister(){
 	TextField MTlocation=new TextField();
 	TextField MTFL=new TextField();
 	TextField username=new TextField();
-	TextField password=new TextField();
-	TextField reenterpass=new TextField();
+	PasswordField password=new PasswordField();
+	PasswordField reenterpass=new PasswordField();
 	
 	ComboBox FLcity=new ComboBox();
 	ObservableList cities=FXCollections.observableArrayList("Saint Petersbutg","Orlando","Miami","Daytona Beach"
@@ -608,10 +628,6 @@ private void MovietheaterRegister(){
 						}
 					}
 		
-				
-				
-				
-				
 				}
 				else{
 					System.out.print("Password are not the same");
@@ -635,7 +651,7 @@ public static Connection getConnection() throws Exception{
 		String driver="com.mysql.jdbc.Driver";
 		String url="jdbc:mysql://127.0.0.1:3306/movieview";
 		String username="root";
-		String password="Yondrese11"; //I am using "password" as my password for MySQL
+		String password="password"; //Yondrese11 I am using "password" as my password for MySQL
 		Class.forName(driver);
 		
 		Connection conn=DriverManager.getConnection(url,username,password);
@@ -649,8 +665,5 @@ public static Connection getConnection() throws Exception{
 	}
 	return null;
 }
-
-
-
 
 }

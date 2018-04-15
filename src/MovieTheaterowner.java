@@ -74,8 +74,6 @@ public class MovieTheaterowner {
 			//gives a default image for each movie
 			//creates a label for each film and displays it on the homepage
 			
-			
-			
 			Image moviepic=new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw6yVjKcPDZoeO48w6bM25vlOMbVR4uSBip8ZC044J5ac7zd665g");
 			ImageView imageholder=new ImageView(moviepic);
 			imageholder.setFitHeight(200);
@@ -83,10 +81,7 @@ public class MovieTheaterowner {
 			Label MovieOnPage=new Label(Moviename);
 			MovieOnPage.setAlignment(Pos.BOTTOM_CENTER);
 			vbox.getChildren().add(imageholder);
-			vbox.getChildren().add(MovieOnPage);
-			
-			
-			
+			vbox.getChildren().add(MovieOnPage);	
 		}
 		
 		
@@ -94,7 +89,7 @@ public class MovieTheaterowner {
 			@Override
 			public void handle(ActionEvent e){
 				Stage newMovies=new Stage();
-				newMovies.setTitle("Add movies to therater");
+				newMovies.setTitle("Add movies to theater");
 				GridPane MoviesInfo=new GridPane();
 				BorderPane MovieCollect=new BorderPane();
 				VBox vbox= new VBox();
@@ -232,11 +227,6 @@ public class MovieTheaterowner {
 							e1.printStackTrace();
 						}
 						
-					
-					
-					
-					
-				
 				}}
 				);
 				
@@ -245,13 +235,7 @@ public class MovieTheaterowner {
 					root.getChildren().add(enter);
 					Scene scene= new Scene(root,500,500);
 					verfi.setScene(scene);
-					verfi.show();
-					
-					
-					
-					
-					
-					
+					verfi.show();	
 					
 					//String insert="INSERT INTO moviesplaying"
 		}
@@ -269,19 +253,6 @@ public class MovieTheaterowner {
 				Scene mt=new Scene(grid,500,500);
 				ShowTime.setScene(mt);
 				ShowTime.show();
-				
-				
-				
-				
-				
-				
-				
-			
-				
-				
-				
-				
-				
 				
 				
 				//String insert="INSERT INTO moviesplaying"
